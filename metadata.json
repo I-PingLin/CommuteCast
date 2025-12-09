@@ -1,0 +1,5 @@
+{
+  "name": "CommuteCast: Audio News Summaries",
+  "description": "Paste a news article to generate a concise summary and listen to it as audio, perfect for your commute.",
+  "requestFramePermissions": []
+}

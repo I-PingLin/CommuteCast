@@ -1,0 +1,98 @@
+<main class="min-h-screen bg-slate-100 font-sans p-4 flex items-center justify-center">
+  <div class="w-full max-w-3xl mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden">
+    
+    <header class="bg-slate-800 text-white p-6 flex items-center space-x-4">
+      <div class="w-12 h-12 bg-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+            <path d="M12 8v8"></path>
+            <path d="M9 10l3-2 3 2"></path>
+            <path d="M9 14l3 2 3-2"></path>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">CommuteCast</h1>
+        <p class="text-slate-300">Your Personalized Audio News Summary</p>
+      </div>
+    </header>
+
+    <div class="p-6 md:p-8 space-y-6">
+      
+      <div>
+        <label for="article-text" class="block text-sm font-medium text-slate-700 mb-2">
+          Paste your news article text below
+        </label>
+        <textarea 
+          id="article-text"
+          rows="10"
+          class="w-full p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow duration-200 resize-y"
+          placeholder="Start by pasting the full text of a news article here..."
+          [value]="articleText()"
+          (input)="updateArticleText($event)">
+        </textarea>
+      </div>
+
+      <div>
+        <button 
+          (click)="generateSummaryAndSpeech()"
+          [disabled]="isLoading() || !articleText().trim()"
+          class="w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300 disabled:cursor-not-allowed transition-colors duration-200">
+          
+          @if (isLoading()) {
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Generating...</span>
+          } @else {
+            <span>Generate Audio Summary</span>
+          }
+        </button>
+      </div>
+
+      @if (error() || summary()) {
+        <div class="border-t border-slate-200 pt-6 space-y-4">
+          @if (error()) {
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg" role="alert">
+              <strong class="font-bold">Error: </strong>
+              <span class="block sm:inline">{{ error() }}</span>
+            </div>
+          }
+          
+          @if (summary()) {
+            <div class="bg-slate-50 p-6 rounded-lg">
+              <h2 class="text-xl font-semibold text-slate-800 mb-4">Your Summary</h2>
+              
+              <div class="flex items-center space-x-4 mb-4">
+                <button 
+                  (click)="toggleAudio()" 
+                  class="w-14 h-14 flex-shrink-0 flex items-center justify-center rounded-full bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform duration-150 ease-in-out active:scale-95">
+                  @if (playingState() === 'playing') {
+                    <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>
+                    </svg>
+                  } @else {
+                    <svg class="w-8 h-8 ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M8 5v14l11-7z"></path>
+                    </svg>
+                  }
+                </button>
+                <div class="text-sm text-slate-600">
+                  @switch (playingState()) {
+                    @case ('playing') { <span>Now Playing...</span> }
+                    @case ('paused') { <span>Paused. Press play to resume.</span> }
+                    @case ('stopped') { <span>Ready to play your summary.</span> }
+                  }
+                </div>
+              </div>
+
+              <div class="prose prose-slate max-w-none text-slate-600">
+                <p>{{ summary() }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</main>
